@@ -22,8 +22,6 @@ services:
     depends_on:
       - postgres
       - redis
-    expose:
-      - 3000
     environment:
       - NODE_ENV=production
       - RAILS_ENV=production
@@ -43,7 +41,6 @@ services:
     command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
 
   postgres:
-    image: postgres:12
     restart: always
     expose:
       - 5432
@@ -62,8 +59,3 @@ services:
       - /data/redis:/data
     expose:
       - 6379
-
-  nginx-chatwoot:
-    container_name: nginx-chatwoot
-    depends_on:
-      - rails
