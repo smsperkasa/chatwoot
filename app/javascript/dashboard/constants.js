@@ -22,6 +22,7 @@ export default {
     EXPANDED: 'expanded',
   },
   DOCS_URL: '//www.chatwoot.com/docs/product/',
+  TESTIMONIAL_URL: 'https://testimonials.cdn.chatwoot.com/content.json',
 };
 export const DEFAULT_REDIRECT_URL = '/app/';
 export const ODOO_SERVICE_URL = 'http://165.232.175.107:3400/chatwoot_webhook/'
