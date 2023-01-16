@@ -12,5 +12,9 @@ services:
     ports:
       - '0.0.0.0:3000:80'
 
+  nginx-postgres:
+    build:
+      dockerfile: Dockerfile_nginx_postgres_staging
+
 volumes:
   postgres_chatwoot:
