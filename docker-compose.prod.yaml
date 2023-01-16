@@ -11,3 +11,7 @@ services:
       dockerfile: Dockerfile_nginx
     ports:
       - '0.0.0.0:443:443'
+
+  nginx-postgres:
+    build:
+      dockerfile: Dockerfile_nginx_postgres
