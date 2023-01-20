@@ -37,6 +37,7 @@
       <woot-audio-recorder
         v-if="showAudioRecorderEditor"
         ref="audioRecorderInput"
+        :audio-record-format="audioRecordFormat"
         @state-recorder-progress-changed="onStateProgressRecorderChanged"
         @state-recorder-changed="onStateRecorderChanged"
         @finish-record="onFinishRecorder"
@@ -95,25 +96,26 @@
       </p>
     </div>
     <reply-bottom-panel
-      :mode="replyType"
-      :inbox="inbox"
-      :send-button-text="replyButtonLabel"
-      :on-file-upload="onFileUpload"
-      :show-file-upload="showFileUpload"
-      :show-audio-recorder="showAudioRecorder"
-      :toggle-emoji-picker="toggleEmojiPicker"
-      :toggle-audio-recorder="toggleAudioRecorder"
-      :toggle-audio-recorder-play-pause="toggleAudioRecorderPlayPause"
-      :show-emoji-picker="showEmojiPicker"
-      :on-send="onSendReply"
-      :is-send-disabled="isReplyButtonDisabled"
-      :recording-audio-duration-text="recordingAudioDurationText"
-      :recording-audio-state="recordingAudioState"
-      :is-recording-audio="isRecordingAudio"
-      :is-on-private-note="isOnPrivateNote"
-      :show-editor-toggle="isAPIInbox && !isOnPrivateNote"
+      :conversation-id="conversationId"
       :enable-multiple-file-upload="enableMultipleFileUpload"
       :has-whatsapp-templates="hasWhatsappTemplates"
+      :inbox="inbox"
+      :is-on-private-note="isOnPrivateNote"
+      :is-recording-audio="isRecordingAudio"
+      :is-send-disabled="isReplyButtonDisabled"
+      :mode="replyType"
+      :on-file-upload="onFileUpload"
+      :on-send="onSendReply"
+      :recording-audio-duration-text="recordingAudioDurationText"
+      :recording-audio-state="recordingAudioState"
+      :send-button-text="replyButtonLabel"
+      :show-audio-recorder="showAudioRecorder"
+      :show-editor-toggle="isAPIInbox && !isOnPrivateNote"
+      :show-emoji-picker="showEmojiPicker"
+      :show-file-upload="showFileUpload"
+      :toggle-audio-recorder-play-pause="toggleAudioRecorderPlayPause"
+      :toggle-audio-recorder="toggleAudioRecorder"
+      :toggle-emoji-picker="toggleEmojiPicker"
       @selectWhatsappTemplate="openWhatsappTemplateModal"
       @toggle-editor="toggleRichContentEditor"
     />
@@ -147,6 +149,7 @@ import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
 import {
   MAXIMUM_FILE_UPLOAD_SIZE,
   MAXIMUM_FILE_UPLOAD_SIZE_TWILIO_SMS_CHANNEL,
+  AUDIO_FORMATS,
 } from 'shared/constants/messages';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 
@@ -461,6 +464,12 @@ export default {
     },
     editorStateId() {
       return `draft-${this.conversationIdByRoute}-${this.replyType}`;
+    },
+    audioRecordFormat() {
+      if (this.isAWebWidgetInbox) {
+        return AUDIO_FORMATS.WEBM;
+      }
+      return AUDIO_FORMATS.OGG;
     },
   },
   watch: {
