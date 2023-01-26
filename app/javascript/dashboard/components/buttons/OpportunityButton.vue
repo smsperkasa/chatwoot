@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <button class="coba" @click="toggleModal">
+    <button class="opportunity_button" @click="toggleModal">
       Create Opportunity
     </button>
 
@@ -54,24 +54,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      currentChat: 'getSelectedChat',
-      chatLists: 'getAllConversations',
-      mineChatsList: 'getMineChats',
-      allChatList: 'getAllStatusChats',
-      unAssignedChatsList: 'getUnAssignedChats',
-      chatListLoading: 'getChatListLoadingStatus',
-      currentUserID: 'getCurrentUserID',
-      activeInbox: 'getSelectedInbox',
-      conversationStats: 'conversationStats/getStats',
-      appliedFilters: 'getAppliedConversationFilters',
-      folders: 'customViews/getCustomViews',
-      inboxes: 'inboxes/getInboxes',
-      contacto: 'contacts/getContact',
+      currentChat: 'getSelectedChat'
     }),
   },
   methods: {
     async ambilData() {
-
       const name = this.$refs.opp_name.value;
       const rev = this.$refs.expected_rev.value;
 
@@ -106,7 +93,7 @@ export default {
 </script>
 
 <style lang="scss">
-.coba {
+.opportunity_button {
   border: 1px solid darkgray;
   background-color: rgb(37, 93, 139);
   border-radius: 25px;
