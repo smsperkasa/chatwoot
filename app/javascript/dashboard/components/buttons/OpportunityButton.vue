@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <button class="opportunity_button" @click="toggleModal">
+    <button class="button opportunity_button" @click="toggleModal">
       Create Opportunity
     </button>
 
@@ -23,7 +23,7 @@
         <div class="modal__content">
           <div>
             <p class="field_name">Opportunity Name</p>
-            <input ref="opp_name" class="input_field" />
+            <input ref="opp_name" class="input_field" style="margin-left: 11px;"/>
           </div>
           <div>
             <p class="field_name">Expected Revenue</p>
@@ -34,8 +34,8 @@
           </div>
         </div>
         <div class="modal__footer">
-          <button class="popup-close" @click="ambilData">
-            Create!!!
+          <button class="button popup-close" @click="ambilData">
+            Submit
           </button>
         </div>
       </div>
@@ -54,7 +54,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      currentChat: 'getSelectedChat'
+      currentChat: 'getSelectedChat',
     }),
   },
   methods: {
@@ -94,9 +94,10 @@ export default {
 
 <style lang="scss">
 .opportunity_button {
+  color:white;
   border: 1px solid darkgray;
   background-color: rgb(37, 93, 139);
-  border-radius: 25px;
+  border-radius: 0.5rem;
   padding: 12px 8px;
   margin-left: 10px;
   cursor: pointer;
@@ -134,7 +135,6 @@ export default {
   color: #fff;
   cursor: pointer;
   font-family: Montserrat, sans-serif;
-  font-size: 1em;
   margin: 5px;
   padding: 10px 15px;
   text-align: center;
@@ -157,9 +157,8 @@ export default {
   display: inline;
   margin-left: 10px;
   margin-bottom: 10px;
-  height: 2.4rem;
   font-size: 1.5rem;
-  // width:50%;
+  width:21.2rem;
 }
 
 .input_field_currency {
