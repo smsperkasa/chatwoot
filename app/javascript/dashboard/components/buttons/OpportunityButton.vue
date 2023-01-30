@@ -69,7 +69,7 @@ export default {
         return;
       }
 
-      let url = 'http://smsperkasa-init-setup-5724093.dev.odoo.com';
+      let url = 'https://smsperkasa-init-setup-5724093.dev.odoo.com';
       await fetch(`${url}/smsp_cw_opportunity`, {
         method: 'POST',
         headers: {
