@@ -4,16 +4,20 @@
       Create Opportunity
     </button>
 
+    <!-- <div v-if="showError" class="popup-error"> -->
+    <div v-if="showNotif" class="notif" @click="toggleError">
+      <div :class="{ popup_error: isError, popup_success: isSuccess }">
+        <div class="close-x" @click="toggleError">
+          <span aria-hidden="true">&times;</span>
+        </div>
+        <div class="notif-msg">
+          <h6>{{ notif_msg }}</h6>
+        </div>
+      </div>
+    </div>
+
     <div v-if="showModal" class="popup">
       <div style="position:relative" class="popup-inner">
-        <!-- <h2>Create Opportunity</h2>
-                <p class="field_name">Opportunity Name</p>
-                <input class="input_field"/>
-                <button 
-                class="popup-close"
-                @click="toggleModal">
-                    Create!!!
-                </button> -->
         <div class="close-x" @click="toggleModal">
           <span aria-hidden="true">&times;</span>
         </div>
@@ -23,7 +27,11 @@
         <div class="modal__content">
           <div>
             <p class="field_name">Opportunity Name</p>
-            <input ref="opp_name" class="input_field" style="margin-left: 11px;"/>
+            <input
+              ref="opp_name"
+              class="input_field"
+              style="margin-left: 11px;"
+            />
           </div>
           <div>
             <p class="field_name">Expected Revenue</p>
@@ -50,6 +58,10 @@ export default {
   data() {
     return {
       showModal: false,
+      showNotif: false,
+      notif_msg: '',
+      isSuccess: false,
+      isError: false,
     };
   },
   computed: {
@@ -59,34 +71,60 @@ export default {
   },
   methods: {
     async ambilData() {
-      const name = this.$refs.opp_name.value;
-      const rev = this.$refs.expected_rev.value;
+      try {
+        const name = this.$refs.opp_name.value;
+        const rev = this.$refs.expected_rev.value;
 
-      if (this.$refs.opp_name.value) {
-        this.toggleModal();
-      } else {
-        alert('Opportunity Name field is empty');
-        return;
+        if (this.$refs.opp_name.value) {
+          this.toggleModal();
+        } else {
+          this.showNotif = !this.showNotif;
+          this.isError = !this.isError;
+          this.notif_msg = 'Opportunity Name field is empty';
+          return;
+        }
+
+        let url = 'https://smsperkasa-init-setup-5724093.dev.odoo.com';
+        await fetch(`${url}/smsp_cw_opportunity`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            opp_name: name,
+            expected_revenue: rev,
+            customer_email: this.currentChat.meta.sender.email,
+            customer_phone: this.currentChat.meta.sender.phone_number,
+            assigned_sales: this.currentChat.meta.assignee.name,
+            assigned_sales_email: this.currentChat.meta.assignee.email,
+          }),
+        });
+        this.showNotif = true;
+        this.isSuccess = true;
+        this.notif_msg = 'Success';
+        await new Promise(resolve => {
+          setTimeout(resolve, 1005);
+        });
+        this.showNotif = false;
+      } catch (err) {
+        this.showNotif = !this.showNotif;
+        this.isError = !this.isError;
+        this.notif_msg = err;
       }
-
-      let url = 'https://smsperkasa-init-setup-5724093.dev.odoo.com';
-      await fetch(`${url}/smsp_cw_opportunity`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          opp_name: name,
-          expected_revenue: rev,
-          customer_email: this.currentChat.meta.sender.email,
-          customer_phone: this.currentChat.meta.sender.phone_number,
-          assigned_sales: this.currentChat.meta.assignee.name,
-          assigned_sales_email: this.currentChat.meta.assignee.email,
-        }),
-      });
     },
     toggleModal() {
       this.showModal = !this.showModal;
+    },
+    toggleError() {
+      this.showNotif = false;
+      if (this.isError) {
+        this.isError = false;
+        this.notif_msg = '';
+      }
+      if (this.isSuccess) {
+        this.isSuccess = false;
+        this.notif_msg = '';
+      }
     },
   },
 };
@@ -94,7 +132,7 @@ export default {
 
 <style lang="scss">
 .opportunity_button {
-  color:white;
+  color: white;
   border: 1px solid darkgray;
   background-color: rgb(37, 93, 139);
   border-radius: 0.5rem;
@@ -123,6 +161,67 @@ export default {
     padding: 10px 32px;
     text-align: center;
     // width: 35%;
+  }
+}
+
+.notif {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  // background-color: rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: flex;
+
+  .popup_error {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    border-radius: 20px;
+    background-color: rgb(255, 139, 139);
+    padding: 10px 32px;
+    text-align: center;
+    width: 30%;
+    height: 10%;
+    z-index: 101;
+    animation: fade-in 0.5s linear;
+  }
+  .popup_success {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    border-radius: 20px;
+    background-color: rgb(139, 255, 158);
+    padding: 10px 32px;
+    text-align: center;
+    width: 30%;
+    height: 10%;
+    z-index: 101;
+    animation: fade-in 0.5s linear;
+  }
+}
+
+.notif-msg {
+  top: 38%;
+  position: absolute;
+}
+
+@keyframes fade-in-out {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -158,7 +257,7 @@ export default {
   margin-left: 10px;
   margin-bottom: 10px;
   font-size: 1.5rem;
-  width:21.2rem;
+  width: 21.2rem;
 }
 
 .input_field_currency {
