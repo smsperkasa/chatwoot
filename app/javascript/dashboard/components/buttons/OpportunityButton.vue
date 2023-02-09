@@ -93,6 +93,7 @@ export default {
           body: JSON.stringify({
             opp_name: name,
             expected_revenue: rev,
+            customer_name: this.currentChat.meta.sender.name,
             customer_email: this.currentChat.meta.sender.email,
             customer_phone: this.currentChat.meta.sender.phone_number,
             assigned_sales: this.currentChat.meta.assignee.name,
