@@ -107,6 +107,8 @@ export default {
           setTimeout(resolve, 1005);
         });
         this.showNotif = false;
+        this.isSuccess = false;
+        this.notif_msg = '';
       } catch (err) {
         this.showNotif = !this.showNotif;
         this.isError = !this.isError;
