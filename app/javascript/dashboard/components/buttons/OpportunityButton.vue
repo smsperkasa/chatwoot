@@ -62,7 +62,6 @@ export default {
       notif_msg: '',
       isSuccess: false,
       isError: false,
-      env_info: process.env,
     };
   },
   computed: {
