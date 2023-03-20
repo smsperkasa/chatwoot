@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  base:
+  rails:
     environment:
       - ODOO_URL:"https://smsperkasa.odoo.com"
       
