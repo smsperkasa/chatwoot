@@ -85,15 +85,7 @@ export default {
         }
 
         // let url = 'https://smsperkasa-init-setup-5724093.dev.odoo.com';
-        let url = process.env.ODOO_URL;
-
-        alert(url);
-
-        if (!url) {
-          url = 'https://smsperkasa-init-setup-5724093.dev.odoo.com';
-        }
-
-        alert(url);
+        let url = 'https://smsperkasa.odoo.com';
 
         await fetch(`${url}/smsp_cw_opportunity`, {
           method: 'POST',

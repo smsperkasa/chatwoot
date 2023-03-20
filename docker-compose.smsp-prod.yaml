@@ -1,10 +1,6 @@
 version: '3'
 
 services:
-  base:
-    environment:
-      - ODOO_URL:"https://smsperkasa.odoo.com"
-      
   postgres:
     volumes:
       - /data/postgres:/var/lib/postgresql/data
