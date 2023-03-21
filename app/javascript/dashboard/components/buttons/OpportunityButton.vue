@@ -87,6 +87,20 @@ export default {
         // let url = 'https://smsperkasa-init-setup-5724093.dev.odoo.com';
         let url = 'https://smsperkasa.odoo.com';
 
+        let payload = JSON.stringify({
+          opp_name: name,
+          expected_revenue: rev,
+          customer_name: this.currentChat.meta.sender.name,
+          customer_email: this.currentChat.meta.sender.email,
+          customer_phone: this.currentChat.meta.sender.phone_number,
+          assigned_sales: this.currentChat.meta.assignee.name,
+          assigned_sales_email: this.currentChat.meta.assignee.email,
+          assigned_sales_email_test: this.currentChat.meta.assignee.email,
+          test2: this.currentChat.meta.assignee,
+        });
+
+        alert(payload);
+
         await fetch(`${url}/smsp_cw_opportunity`, {
           method: 'POST',
           headers: {
@@ -100,6 +114,7 @@ export default {
             customer_phone: this.currentChat.meta.sender.phone_number,
             assigned_sales: this.currentChat.meta.assignee.name,
             assigned_sales_email: this.currentChat.meta.assignee.email,
+            assigned_sales_email_test: this.currentChat.meta.assignee.email,
           }),
         });
         this.showNotif = true;
