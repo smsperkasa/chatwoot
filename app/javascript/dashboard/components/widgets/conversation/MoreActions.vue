@@ -33,7 +33,7 @@
       :current-chat="currentChat"
       @cancel="toggleEmailActionsModal"
     />
-    <OpportunityButton />
+    <!-- <OpportunityButton /> -->
   </div>
 </template>
 <script>
@@ -42,7 +42,7 @@ import { mixin as clickaway } from 'vue-clickaway';
 import alertMixin from 'shared/mixins/alertMixin';
 import EmailTranscriptModal from './EmailTranscriptModal';
 import ResolveAction from '../../buttons/ResolveAction';
-import OpportunityButton from '../../buttons/OpportunityButton.vue';
+// import OpportunityButton from '../../buttons/OpportunityButton.vue';
 import {
   CMD_MUTE_CONVERSATION,
   CMD_SEND_TRANSCRIPT,
@@ -53,7 +53,7 @@ export default {
   components: {
     EmailTranscriptModal,
     ResolveAction,
-    OpportunityButton,
+    // OpportunityButton,
   },
   mixins: [alertMixin, clickaway],
   data() {
