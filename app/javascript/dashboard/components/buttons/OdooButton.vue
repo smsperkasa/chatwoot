@@ -113,8 +113,8 @@ export default {
       STATUS_TYPE: wootConstants.STATUS_TYPE,
       showModal: false,
       // int_gate_url: 'http://localhost:8000',
-      int_gate_url: 'http://188.166.187.106:8084',
-      // int_gate_url: 'https://in-gate.besisni.com',
+      // int_gate_url: 'http://188.166.187.106:8083', // Staging url but can't be used because http
+      int_gate_url: 'https://in-gate.besisni.com',
       RecordType: 'Lead/Opp',
 
       showNotif: false,
