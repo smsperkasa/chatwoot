@@ -1,6 +1,6 @@
 /* global axios */
 import ApiClient from './ApiClient';
-import { ODOO_SERVICE_URL } from '../constants';
+import { ODOO_SERVICE_URL } from '../constants/globals';
 
 export const buildContactParams = (page, sortAttr, label, search) => {
   let params = `include_contact_inboxes=false&page=${page}&sort=${sortAttr}`;
@@ -32,11 +32,11 @@ class ContactAPI extends ApiClient {
     const result = await axios.post(this.url, data);
     // Send chatwoot contact to our odoo connector service
     const payload = {
-      "method": "contact_create",
-      "data": {
-        contact: result.data.payload.contact
-      }
-    }
+      method: 'contact_create',
+      data: {
+        contact: result.data.payload.contact,
+      },
+    };
     axios.post(ODOO_SERVICE_URL, payload);
     return result;
   }
@@ -44,11 +44,11 @@ class ContactAPI extends ApiClient {
   async update(id, data) {
     const result = await axios.patch(`${this.url}/${id}`, data);
     const payload = {
-      "method": "contact_update",
-      "data": {
-        contact: result.data.payload
-      }
-    }
+      method: 'contact_update',
+      data: {
+        contact: result.data.payload,
+      },
+    };
     // console.log(ODOO_SERVICE_URL)
     // Send the data to our service
     axios.post(ODOO_SERVICE_URL, payload);
