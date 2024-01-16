@@ -115,7 +115,8 @@ export default {
       STATUS_TYPE: wootConstants.STATUS_TYPE,
       showModal: false,
       // int_gate_url: 'http://localhost:8000',
-      int_gate_url: 'https://in-gate.besisni.com',
+      // int_gate_url: 'https://in-gate.besisni.com',
+      int_gate_url: 'http://188.166.187.106:7000',
       RecordType: 'Lead/Opp',
       cw_url: new URL(window.location.href).origin,
       access_token: 't9npPv7nYjZatkvo54bUCdJT', // Staging
@@ -165,69 +166,86 @@ export default {
           return;
         }
 
-        let payload = JSON.stringify({
-          query: `
-              mutation {
-                createCrmLead(input:{
-                  valsList:{
-                    name: "${this.$refs.opp_name.value}"
-                    salesEmail: "${this.currentChat.meta.assignee?.email}"
-                    emailFrom: "${this.currentChat.meta.sender.email}"
-                    phone: "${this.currentChat.meta.sender.phone_number}"
-                    contactName: "${this.currentChat.meta.sender.name}"
-                    type: "${
-                      recordType === 'Opportunity' ? 'opportunity' : 'lead'
-                    }"
-                  }
-                }){
-                  status
-                  errorMessage
-                }
-              }
-            `,
-        });
-
-        fetch(`${this.int_gate_url}/graphql/`, {
+        fetch(`${this.int_gate_url}/auth/login/`,{
           method: 'POST',
           headers: {
             'content-type': 'application/json',
           },
-          body: payload,
+          body: JSON.stringify({
+            "username": "admin",
+            "password": "s0f!a_s3xy?!"
+          })
         })
-          .then(res => {
-            res.json().then(res2 => {
-              if (res2.data.createCrmLead.status?.toLowerCase() === 'success') {
-                this.showNotif = true;
-                this.isSuccess = true;
-                this.notif_msg = 'Success';
-              } else {
+          .then(auth => {
+            console.log(auth);
+            let payload = JSON.stringify({
+              query: `
+                  mutation {
+                    createCrmLead(input:{
+                      valsList:{
+                        name: "${this.$refs.opp_name.value}"
+                        salesEmail: "${this.currentChat.meta.assignee?.email}"
+                        emailFrom: "${this.currentChat.meta.sender.email}"
+                        phone: "${this.currentChat.meta.sender.phone_number}"
+                        contactName: "${this.currentChat.meta.sender.name}"
+                        type: "${
+                          recordType === 'Opportunity' ? 'opportunity' : 'lead'
+                        }"
+                      }
+                    }){
+                      status
+                      errorMessage
+                    }
+                  }
+                `,
+            });
+    
+            fetch(`${this.int_gate_url}/graphql/internal/`, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+                
+              },
+              body: payload,
+            })
+              .then(res => {
+                res.json().then(res2 => {
+                  if (res2.data.createCrmLead.status?.toLowerCase() === 'success') {
+                    this.showNotif = true;
+                    this.isSuccess = true;
+                    this.notif_msg = 'Success';
+                  } else {
+                    this.showNotif = !this.showNotif;
+                    this.isError = !this.isError;
+                    this.notif_msg = res2.data.createCrmLead.errorMessage;
+                  }
+                });
+              })
+              .then(() => {
+                let label_body = JSON.stringify({
+                  labels: ['leads_created'],
+                });
+                fetch(
+                  `${this.cw_url}/api/v1/accounts/${this.currentChat.account_id}/conversations/${this.currentChat.id}/labels`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      'content-type': 'application/json',
+                      api_access_token: this.access_token,
+                    },
+                    body: label_body,
+                  }
+                );
+              })
+              .catch(err => {
                 this.showNotif = !this.showNotif;
                 this.isError = !this.isError;
-                this.notif_msg = res2.data.createCrmLead.errorMessage;
-              }
-            });
+                this.notif_msg = err;
+              });
           })
-          .then(() => {
-            let label_body = JSON.stringify({
-              labels: ['leads_created'],
-            });
-            fetch(
-              `${this.cw_url}/api/v1/accounts/${this.currentChat.account_id}/conversations/${this.currentChat.id}/labels`,
-              {
-                method: 'POST',
-                headers: {
-                  'content-type': 'application/json',
-                  api_access_token: this.access_token,
-                },
-                body: label_body,
-              }
-            );
-          })
-          .catch(err => {
-            this.showNotif = !this.showNotif;
-            this.isError = !this.isError;
-            this.notif_msg = err;
-          });
+          .catch(err => console.log(err))
+
       } catch (err) {
         this.showNotif = !this.showNotif;
         this.isError = !this.isError;
