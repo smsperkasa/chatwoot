@@ -116,7 +116,8 @@ export default {
       showModal: false,
       // int_gate_url: 'http://localhost:8000',
       // int_gate_url: 'https://in-gate.besisni.com',
-      int_gate_url: 'http://188.166.187.106:7000',
+      // int_gate_url: 'http://188.166.187.106:7000',
+      int_gate_url: 'https://api.besisni.com',
       RecordType: 'Lead/Opp',
       cw_url: new URL(window.location.href).origin,
       access_token: 't9npPv7nYjZatkvo54bUCdJT', // Staging
