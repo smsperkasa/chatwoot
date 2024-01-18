@@ -34,7 +34,7 @@
       @cancel="toggleEmailActionsModal"
     />
     <!-- <OpportunityButton /> -->
-    <!-- <OdooButton /> -->
+    <OdooButton />
   </div>
 </template>
 <script>
@@ -44,7 +44,7 @@ import alertMixin from 'shared/mixins/alertMixin';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
 // import OpportunityButton from '../../buttons/OpportunityButton.vue';
-// import OdooButton from '../../buttons/OdooButton';
+import OdooButton from '../../buttons/OdooButton';
 import {
   CMD_MUTE_CONVERSATION,
   CMD_SEND_TRANSCRIPT,
@@ -56,7 +56,7 @@ export default {
     EmailTranscriptModal,
     ResolveAction,
     // OpportunityButton,
-    // OdooButton,
+    OdooButton,
   },
   mixins: [alertMixin, clickaway],
   data() {
