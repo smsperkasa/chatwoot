@@ -37,10 +37,14 @@ services:
       - postgres
       - redis
     environment:
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
       - NODE_ENV=production
+      - NODE_OPTIONS=--openssl-legacy-provider
       - RAILS_ENV=production
       - INSTALLATION_ENV=docker
-    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    entrypoint: docker/entrypoints/webpack.sh
+    command: bin/webpack-dev-server
+    #command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
 
   postgres:
     image: postgres:12

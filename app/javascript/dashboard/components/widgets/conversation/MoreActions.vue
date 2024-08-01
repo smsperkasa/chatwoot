@@ -39,7 +39,6 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import { mixin as clickaway } from 'vue-clickaway';
 import alertMixin from 'shared/mixins/alertMixin';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
@@ -58,7 +57,7 @@ export default {
     // OpportunityButton,
     OdooButton,
   },
-  mixins: [alertMixin, clickaway],
+  mixins: [alertMixin],
   data() {
     return {
       showEmailActionsModal: false,
@@ -68,14 +67,14 @@ export default {
     ...mapGetters({ currentChat: 'getSelectedChat' }),
   },
   mounted() {
-    bus.$on(CMD_MUTE_CONVERSATION, this.mute);
-    bus.$on(CMD_UNMUTE_CONVERSATION, this.unmute);
-    bus.$on(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
+    this.$emitter.on(CMD_MUTE_CONVERSATION, this.mute);
+    this.$emitter.on(CMD_UNMUTE_CONVERSATION, this.unmute);
+    this.$emitter.on(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
   },
   destroyed() {
-    bus.$off(CMD_MUTE_CONVERSATION, this.mute);
-    bus.$off(CMD_UNMUTE_CONVERSATION, this.unmute);
-    bus.$off(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
+    this.$emitter.off(CMD_MUTE_CONVERSATION, this.mute);
+    this.$emitter.off(CMD_UNMUTE_CONVERSATION, this.unmute);
+    this.$emitter.off(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
   },
   methods: {
     mute() {
