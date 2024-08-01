@@ -33,6 +33,8 @@
       :current-chat="currentChat"
       @cancel="toggleEmailActionsModal"
     />
+    <!-- <OpportunityButton /> -->
+    <OdooButton />
   </div>
 </template>
 <script>
@@ -40,6 +42,8 @@ import { mapGetters } from 'vuex';
 import alertMixin from 'shared/mixins/alertMixin';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
+// import OpportunityButton from '../../buttons/OpportunityButton.vue';
+import OdooButton from '../../buttons/OdooButton';
 import {
   CMD_MUTE_CONVERSATION,
   CMD_SEND_TRANSCRIPT,
@@ -50,6 +54,8 @@ export default {
   components: {
     EmailTranscriptModal,
     ResolveAction,
+    // OpportunityButton,
+    OdooButton,
   },
   mixins: [alertMixin],
   data() {

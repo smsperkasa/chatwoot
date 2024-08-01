@@ -1,5 +1,5 @@
-import endPoints from 'widget/api/endPoints';
-import { API } from 'widget/helpers/axios';
+import endPoints from 'widget/api/endPoints'
+import { API } from 'widget/helpers/axios'
 
 const createConversationAPI = async content => {
   const urlData = endPoints.createConversation(content);
