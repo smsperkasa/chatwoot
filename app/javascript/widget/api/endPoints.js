@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { buildSearchParamsWithLocale } from '../helpers/urlParamsHelper';
 import { generateEventParams } from './events';
 
