@@ -42,6 +42,7 @@ export default {
         this.$store.dispatch('conversation/createConversation', {
           fullName: fullName,
           emailAddress: emailAddress,
+          phoneNumber: phoneNumber,
           message: message,
           phoneNumber: phoneNumber,
           customAttributes: conversationCustomAttributes,

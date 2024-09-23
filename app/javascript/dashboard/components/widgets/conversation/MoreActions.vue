@@ -1,8 +1,49 @@
+<template>
+  <div class="flex actions--container relative items-center gap-2">
+    <woot-button
+      v-if="!currentChat.muted"
+      v-tooltip="$t('CONTACT_PANEL.MUTE_CONTACT')"
+      variant="clear"
+      color-scheme="secondary"
+      icon="speaker-mute"
+      @click="mute"
+    />
+    <woot-button
+      v-else
+      v-tooltip.left="$t('CONTACT_PANEL.UNMUTE_CONTACT')"
+      variant="clear"
+      color-scheme="secondary"
+      icon="speaker-1"
+      @click="unmute"
+    />
+    <woot-button
+      v-tooltip="$t('CONTACT_PANEL.SEND_TRANSCRIPT')"
+      variant="clear"
+      color-scheme="secondary"
+      icon="share"
+      @click="toggleEmailActionsModal"
+    />
+    <resolve-action
+      :conversation-id="currentChat.id"
+      :status="currentChat.status"
+    />
+    <email-transcript-modal
+      v-if="showEmailActionsModal"
+      :show="showEmailActionsModal"
+      :current-chat="currentChat"
+      @cancel="toggleEmailActionsModal"
+    />
+    <!-- <OpportunityButton /> -->
+    <OdooButton />
+  </div>
+</template>
 <script>
 import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
+// import OpportunityButton from '../../buttons/OpportunityButton.vue';
+import OdooButton from '../../buttons/OdooButton';
 import {
   CMD_MUTE_CONVERSATION,
   CMD_SEND_TRANSCRIPT,
@@ -13,6 +54,8 @@ export default {
   components: {
     EmailTranscriptModal,
     ResolveAction,
+    // OpportunityButton,
+    OdooButton,
   },
   data() {
     return {
