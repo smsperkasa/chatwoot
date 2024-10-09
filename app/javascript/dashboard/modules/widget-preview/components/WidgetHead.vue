@@ -1,3 +1,25 @@
+<script>
+export default {
+  props: {
+    config: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  computed: {
+    isDefaultScreen() {
+      return (
+        this.config.isDefaultScreen &&
+        ((this.config.welcomeHeading &&
+          this.config.welcomeHeading.length !== 0) ||
+          (this.config.welcomeTagLine &&
+            this.config.welcomeTagline.length !== 0))
+      );
+    },
+  },
+};
+</script>
+
 <template>
   <div class="header-wrapper">
     <div class="header-branding">
@@ -24,28 +46,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    config: {
-      type: Object,
-      default: () => {},
-    },
-  },
-  computed: {
-    isDefaultScreen() {
-      return (
-        this.config.isDefaultScreen &&
-        ((this.config.welcomeHeading &&
-          this.config.welcomeHeading.length !== 0) ||
-          (this.config.welcomeTagLine &&
-            this.config.welcomeTagline.length !== 0))
-      );
-    },
-  },
-};
-</script>
-
 <style lang="scss" scoped>
 .header-wrapper {
   background-color: var(--white);
@@ -60,7 +60,7 @@ export default {
       align-items: center;
       display: flex;
       flex-direction: row;
-      justify-content: start;
+      justify-content: flex-start;
 
       .logo {
         border-radius: 100%;

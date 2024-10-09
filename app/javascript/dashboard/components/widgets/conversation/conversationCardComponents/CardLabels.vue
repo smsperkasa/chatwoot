@@ -1,49 +1,26 @@
-<template>
-  <div
-    v-show="activeLabels.length"
-    ref="labelContainer"
-    class="label-container mt-0.5 mx-2 mb-0"
-  >
-    <div
-      class="labels-wrap flex items-end min-w-0 flex-shrink"
-      :class="{ expand: showAllLabels }"
-    >
-      <woot-label
-        v-for="(label, index) in activeLabels"
-        :key="label.id"
-        :title="label.title"
-        :description="label.description"
-        :color="label.color"
-        variant="smooth"
-        small
-        :class="{ hidden: !showAllLabels && index > labelPosition }"
-      />
-      <woot-button
-        v-if="showExpandLabelButton"
-        :title="
-          showAllLabels
-            ? $t('CONVERSATION.CARD.HIDE_LABELS')
-            : $t('CONVERSATION.CARD.SHOW_LABELS')
-        "
-        class="show-more--button sticky flex-shrink-0 right-0 mr-6 rtl:rotate-180"
-        color-scheme="secondary"
-        variant="hollow"
-        :icon="showAllLabels ? 'chevron-left' : 'chevron-right'"
-        size="tiny"
-        @click="onShowLabels"
-      />
-    </div>
-  </div>
-</template>
 <script>
-import conversationLabelMixin from 'dashboard/mixins/conversation/labelMixin';
+import { computed } from 'vue';
+import { useMapGetter } from 'dashboard/composables/store';
+
 export default {
-  mixins: [conversationLabelMixin],
   props: {
-    conversationId: {
-      type: Number,
+    conversationLabels: {
+      type: Array,
       required: true,
     },
+  },
+  setup(props) {
+    const accountLabels = useMapGetter('labels/getLabels');
+
+    const activeLabels = computed(() => {
+      return accountLabels.value.filter(({ title }) =>
+        props.conversationLabels.includes(title)
+      );
+    });
+
+    return {
+      activeLabels,
+    };
   },
   data() {
     return {
@@ -58,32 +35,80 @@ export default {
     },
   },
   mounted() {
+    // the problem here is that there is a certain amount of delay between the conversation
+    // card being mounted and the resize event eventually being triggered
+    // This means we need to run the function immediately after the component is mounted
+    // Happens especially when used in a virtual list.
+    // We can make the first trigger, a standard part of the directive, in case
+    // we face this issue again
     this.computeVisibleLabelPosition();
   },
   methods: {
     onShowLabels(e) {
       e.stopPropagation();
       this.showAllLabels = !this.showAllLabels;
+      this.$nextTick(() => this.computeVisibleLabelPosition());
     },
     computeVisibleLabelPosition() {
+      const beforeSlot = this.$slots.before ? 100 : 0;
       const labelContainer = this.$refs.labelContainer;
-      const labels = this.$refs.labelContainer.querySelectorAll('.label');
+      if (!labelContainer) return;
+
+      const labels = Array.from(labelContainer.querySelectorAll('.label'));
       let labelOffset = 0;
       this.showExpandLabelButton = false;
-
-      Array.from(labels).forEach((label, index) => {
+      labels.forEach((label, index) => {
         labelOffset += label.offsetWidth + 8;
-
-        if (labelOffset < labelContainer.clientWidth - 16) {
+        if (labelOffset < labelContainer.clientWidth - 16 - beforeSlot) {
           this.labelPosition = index;
         } else {
-          this.showExpandLabelButton = true;
+          this.showExpandLabelButton = labels.length > 1;
         }
       });
     },
   },
 };
 </script>
+
+<template>
+  <div
+    v-if="activeLabels.length || $slots.before"
+    ref="labelContainer"
+    v-resize="computeVisibleLabelPosition"
+  >
+    <div
+      class="flex items-end flex-shrink min-w-0 gap-y-1"
+      :class="{ 'h-auto overflow-visible flex-row flex-wrap': showAllLabels }"
+    >
+      <slot name="before" />
+      <woot-label
+        v-for="(label, index) in activeLabels"
+        :key="label ? label.id : index"
+        :title="label.title"
+        :description="label.description"
+        :color="label.color"
+        variant="smooth"
+        class="!mb-0 max-w-[calc(100%-0.5rem)]"
+        small
+        :class="{ hidden: !showAllLabels && index > labelPosition }"
+      />
+      <woot-button
+        v-if="showExpandLabelButton"
+        :title="
+          showAllLabels
+            ? $t('CONVERSATION.CARD.HIDE_LABELS')
+            : $t('CONVERSATION.CARD.SHOW_LABELS')
+        "
+        class="sticky right-0 flex-shrink-0 mr-6 show-more--button rtl:rotate-180"
+        color-scheme="secondary"
+        variant="hollow"
+        :icon="showAllLabels ? 'chevron-left' : 'chevron-right'"
+        size="tiny"
+        @click="onShowLabels"
+      />
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .show-more--button {
@@ -94,24 +119,8 @@ export default {
 }
 
 .labels-wrap {
-  &.expand {
-    @apply h-auto overflow-visible flex-row flex-wrap;
-
-    .label {
-      @apply mb-1;
-    }
-
-    .show-more--button {
-      @apply mb-1;
-    }
-  }
-
   .secondary {
     @apply border border-solid border-slate-100 dark:border-slate-700;
-  }
-
-  .label {
-    @apply mb-0;
   }
 }
 

@@ -1,105 +1,14 @@
-<template>
-  <div class="phone-input--wrap relative mt-2">
-    <div
-      class="phone-input rounded w-full flex items-center justify-start outline-none border border-solid"
-      :class="inputHasError"
-    >
-      <div
-        class="country-emoji--wrap h-full cursor-pointer flex items-center justify-between px-2 py-2"
-        :class="dropdownClass"
-        @click="toggleCountryDropdown"
-      >
-        <h5 v-if="activeCountry.emoji" class="text-xl mb-0">
-          {{ activeCountry.emoji }}
-        </h5>
-        <fluent-icon v-else icon="globe" class="fluent-icon" size="20" />
-        <fluent-icon icon="chevron-down" class="fluent-icon" size="12" />
-      </div>
-      <span
-        v-if="activeDialCode"
-        class="py-2 pr-0 pl-2 text-base"
-        :class="$dm('text-slate-700', 'dark:text-slate-50')"
-      >
-        {{ activeDialCode }}
-      </span>
-      <input
-        :value="phoneNumber"
-        type="phoneInput"
-        class="border-0 w-full py-2 pl-2 pr-3 leading-tight outline-none h-full rounded-r"
-        name="phoneNumber"
-        :placeholder="placeholder"
-        :class="inputLightAndDarkModeColor"
-        @input="onChange"
-        @blur="context.blurHandler"
-      />
-    </div>
-    <div
-      v-if="showDropdown"
-      ref="dropdown"
-      v-on-clickaway="closeDropdown"
-      :class="dropdownBackgroundClass"
-      class="country-dropdown h-48 overflow-y-auto z-10 absolute top-12 px-0 pt-0 pl-1 pr-1 pb-1 rounded shadow-lg"
-    >
-      <div class="sticky top-0" :class="dropdownBackgroundClass">
-        <input
-          ref="searchbar"
-          v-model="searchCountry"
-          type="text"
-          placeholder="Search country"
-          class="dropdown-search h-8 text-sm mb-1 mt-1 w-full rounded py-2 px-3 outline-none border border-solid"
-          :class="[$dm('bg-slate-50', 'dark:bg-slate-600'), inputBorderColor]"
-        />
-      </div>
-      <div
-        v-for="(country, index) in items"
-        ref="dropdownItem"
-        :key="index"
-        class="country-dropdown--item h-8 flex items-center cursor-pointer rounded py-2 px-2"
-        :class="[
-          dropdownItemClass,
-          country.id === activeCountryCode ? activeDropdownItemClass : '',
-          index === selectedIndex ? focusedDropdownItemClass : '',
-        ]"
-        @click="onSelectCountry(country)"
-      >
-        <span v-if="country.emoji" class="mr-2 text-xl">{{
-          country.emoji
-        }}</span>
-        <span class="truncate text-sm leading-5">
-          {{ country.name }}
-        </span>
-        <span class="ml-2 text-xs">{{ country.dial_code }}</span>
-      </div>
-      <div v-if="items.length === 0">
-        <span
-          class="text-sm mt-4 justify-center text-center flex"
-          :class="$dm('text-slate-700', 'dark:text-slate-50')"
-        >
-          {{ $t('PRE_CHAT_FORM.FIELDS.PHONE_NUMBER.DROPDOWN_EMPTY') }}
-        </span>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
-import { mixin as clickaway } from 'vue-clickaway';
 import countries from 'shared/constants/countries.js';
 import FluentIcon from 'shared/components/FluentIcon/Index.vue';
-import mentionSelectionKeyboardMixin from 'dashboard/components/widgets/mentions/mentionSelectionKeyboardMixin.js';
 import FormulateInputMixin from '@braid/vue-formulate/src/FormulateInputMixin';
-import darkModeMixin from 'widget/mixins/darkModeMixin';
+import { useDarkMode } from 'widget/composables/useDarkMode';
 
 export default {
   components: {
     FluentIcon,
   },
-  mixins: [
-    mentionSelectionKeyboardMixin,
-    FormulateInputMixin,
-    darkModeMixin,
-    clickaway,
-  ],
+  mixins: [FormulateInputMixin],
   props: {
     placeholder: {
       type: String,
@@ -109,6 +18,10 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  setup() {
+    const { getThemeClass } = useDarkMode();
+    return { getThemeClass };
   },
   data() {
     return {
@@ -136,28 +49,31 @@ export default {
       return this.activeCountryCode ? 'Clear selection' : 'Select Country';
     },
     dropdownClass() {
-      return `${this.$dm('bg-slate-100', 'dark:bg-slate-700')} ${this.$dm(
-        'text-slate-700',
-        'dark:text-slate-50'
-      )}`;
+      return `${this.getThemeClass(
+        'bg-slate-100',
+        'dark:bg-slate-700'
+      )} ${this.getThemeClass('text-slate-700', 'dark:text-slate-50')}`;
     },
     dropdownBackgroundClass() {
-      return `${this.$dm('bg-white', 'dark:bg-slate-700')} ${this.$dm(
-        'text-slate-700',
-        'dark:text-slate-50'
-      )}`;
+      return `${this.getThemeClass(
+        'bg-white',
+        'dark:bg-slate-700'
+      )} ${this.getThemeClass('text-slate-700', 'dark:text-slate-50')}`;
     },
     dropdownItemClass() {
-      return `${this.$dm('text-slate-700', 'dark:text-slate-50')} ${this.$dm(
-        'hover:bg-slate-50',
-        'dark:hover:bg-slate-600'
-      )}`;
+      return `${this.getThemeClass(
+        'text-slate-700',
+        'dark:text-slate-50'
+      )} ${this.getThemeClass('hover:bg-slate-50', 'dark:hover:bg-slate-600')}`;
     },
     activeDropdownItemClass() {
-      return `active ${this.$dm('bg-slate-100', 'dark:bg-slate-800')}`;
+      return `active ${this.getThemeClass(
+        'bg-slate-100',
+        'dark:bg-slate-800'
+      )}`;
     },
     focusedDropdownItemClass() {
-      return `focus ${this.$dm('bg-slate-50', 'dark:bg-slate-600')}`;
+      return `focus ${this.getThemeClass('bg-slate-50', 'dark:bg-slate-600')}`;
     },
     inputHasError() {
       return this.hasErrorInPhoneInput
@@ -165,13 +81,16 @@ export default {
         : `hover:border-black-300 focus:border-black-300 ${this.inputLightAndDarkModeColor} ${this.inputBorderColor}`;
     },
     inputBorderColor() {
-      return `${this.$dm('border-black-200', 'dark:border-black-500')}`;
+      return `${this.getThemeClass(
+        'border-black-200',
+        'dark:border-black-500'
+      )}`;
     },
     inputLightAndDarkModeColor() {
-      return `${this.$dm('bg-white', 'dark:bg-slate-600')} ${this.$dm(
-        'text-slate-700',
-        'dark:text-slate-50'
-      )}`;
+      return `${this.getThemeClass(
+        'bg-white',
+        'dark:bg-slate-600'
+      )} ${this.getThemeClass('text-slate-700', 'dark:text-slate-50')}`;
     },
     items() {
       return this.countries.filter(country => {
@@ -189,6 +108,14 @@ export default {
         this.countries.find(country => country.id === this.activeCountryCode) ||
         ''
       );
+    },
+  },
+  watch: {
+    items(newItems) {
+      if (newItems.length < this.selectedIndex + 1) {
+        // Reset the selected index to 0 if the new items length is less than the selected index.
+        this.selectedIndex = 0;
+      }
     },
   },
   methods: {
@@ -220,27 +147,47 @@ export default {
     },
     dropdownItem() {
       // This function is used to get all the items in the dropdown.
+      if (!this.showDropdown) return [];
       return Array.from(
-        this.$refs.dropdown.querySelectorAll(
+        this.$refs.dropdown?.querySelectorAll(
           'div.country-dropdown div.country-dropdown--item'
         )
       );
     },
     focusedOrActiveItem(className) {
       // This function is used to get the focused or active item in the dropdown.
+      if (!this.showDropdown) return [];
       return Array.from(
-        this.$refs.dropdown.querySelectorAll(
+        this.$refs.dropdown?.querySelectorAll(
           `div.country-dropdown div.country-dropdown--item.${className}`
         )
       );
     },
-    handleKeyboardEvent(e) {
-      if (this.showDropdown) {
-        this.processKeyDownEvent(e);
+    adjustScroll() {
+      this.$nextTick(() => {
         this.scrollToFocusedOrActiveItem(this.focusedOrActiveItem('focus'));
+      });
+    },
+    adjustSelection(direction) {
+      if (!this.showDropdown) return;
+      const maxIndex = this.items.length - 1;
+      if (direction === 'up') {
+        this.selectedIndex =
+          this.selectedIndex <= 0 ? maxIndex : this.selectedIndex - 1;
+      } else if (direction === 'down') {
+        this.selectedIndex =
+          this.selectedIndex >= maxIndex ? 0 : this.selectedIndex + 1;
       }
+      this.adjustScroll();
+    },
+    moveSelectionUp() {
+      this.adjustSelection('up');
+    },
+    moveSelectionDown() {
+      this.adjustSelection('down');
     },
     onSelect() {
+      if (!this.showDropdown || this.selectedIndex === -1) return;
       this.onSelectCountry(this.items[this.selectedIndex]);
     },
     scrollToFocusedOrActiveItem(item) {
@@ -283,6 +230,96 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="relative mt-2 phone-input--wrap">
+    <div
+      class="flex items-center justify-start w-full border border-solid rounded outline-none phone-input"
+      :class="inputHasError"
+    >
+      <div
+        class="flex items-center justify-between h-full px-2 py-2 cursor-pointer country-emoji--wrap"
+        :class="dropdownClass"
+        @click="toggleCountryDropdown"
+      >
+        <h5 v-if="activeCountry.emoji" class="mb-0 text-xl">
+          {{ activeCountry.emoji }}
+        </h5>
+        <FluentIcon v-else icon="globe" class="fluent-icon" size="20" />
+        <FluentIcon icon="chevron-down" class="fluent-icon" size="12" />
+      </div>
+      <span
+        v-if="activeDialCode"
+        class="py-2 pl-2 pr-0 text-base"
+        :class="getThemeClass('text-slate-700', 'dark:text-slate-50')"
+      >
+        {{ activeDialCode }}
+      </span>
+      <input
+        :value="phoneNumber"
+        type="phoneInput"
+        class="w-full h-full py-2 pl-2 pr-3 leading-tight border-0 rounded-r outline-none"
+        name="phoneNumber"
+        :placeholder="placeholder"
+        :class="inputLightAndDarkModeColor"
+        @input="onChange"
+        @blur="context.blurHandler"
+      />
+    </div>
+    <div
+      v-if="showDropdown"
+      ref="dropdown"
+      v-on-clickaway="closeDropdown"
+      :class="dropdownBackgroundClass"
+      class="absolute z-10 h-48 px-0 pt-0 pb-1 pl-1 pr-1 overflow-y-auto rounded shadow-lg country-dropdown top-12"
+      @keydown.up="moveSelectionUp"
+      @keydown.down="moveSelectionDown"
+      @keydown.enter="onSelect"
+    >
+      <div class="sticky top-0" :class="dropdownBackgroundClass">
+        <input
+          ref="searchbar"
+          v-model="searchCountry"
+          type="text"
+          :placeholder="$t('PRE_CHAT_FORM.FIELDS.PHONE_NUMBER.DROPDOWN_SEARCH')"
+          class="w-full h-8 px-3 py-2 mt-1 mb-1 text-sm border border-solid rounded outline-none dropdown-search"
+          :class="[
+            getThemeClass('bg-slate-50', 'dark:bg-slate-600'),
+            inputBorderColor,
+          ]"
+        />
+      </div>
+      <div
+        v-for="(country, index) in items"
+        :key="index"
+        class="flex items-center h-8 px-2 py-2 rounded cursor-pointer country-dropdown--item"
+        :class="[
+          dropdownItemClass,
+          country.id === activeCountryCode ? activeDropdownItemClass : '',
+          index === selectedIndex ? focusedDropdownItemClass : '',
+        ]"
+        @click="onSelectCountry(country)"
+      >
+        <span v-if="country.emoji" class="mr-2 text-xl">{{
+          country.emoji
+        }}</span>
+        <span class="text-sm leading-5 truncate">
+          {{ country.name }}
+        </span>
+        <span class="ml-2 text-xs">{{ country.dial_code }}</span>
+      </div>
+      <div v-if="items.length === 0">
+        <span
+          class="flex justify-center mt-4 text-sm text-center"
+          :class="getThemeClass('text-slate-700', 'dark:text-slate-50')"
+        >
+          {{ $t('PRE_CHAT_FORM.FIELDS.PHONE_NUMBER.DROPDOWN_EMPTY') }}
+        </span>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style lang="scss" scoped>
 @import '~widget/assets/scss/variables.scss';
 .phone-input--wrap {

@@ -39,8 +39,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import { mixin as clickaway } from 'vue-clickaway';
-import alertMixin from 'shared/mixins/alertMixin';
+import { useAlert } from 'dashboard/composables';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
 // import OpportunityButton from '../../buttons/OpportunityButton.vue';
@@ -49,7 +48,7 @@ import {
   CMD_MUTE_CONVERSATION,
   CMD_SEND_TRANSCRIPT,
   CMD_UNMUTE_CONVERSATION,
-} from '../../../routes/dashboard/commands/commandBarBusEvents';
+} from 'dashboard/helper/commandbar/events';
 
 export default {
   components: {
@@ -58,7 +57,6 @@ export default {
     // OpportunityButton,
     OdooButton,
   },
-  mixins: [alertMixin, clickaway],
   data() {
     return {
       showEmailActionsModal: false,
@@ -68,23 +66,23 @@ export default {
     ...mapGetters({ currentChat: 'getSelectedChat' }),
   },
   mounted() {
-    bus.$on(CMD_MUTE_CONVERSATION, this.mute);
-    bus.$on(CMD_UNMUTE_CONVERSATION, this.unmute);
-    bus.$on(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
+    this.$emitter.on(CMD_MUTE_CONVERSATION, this.mute);
+    this.$emitter.on(CMD_UNMUTE_CONVERSATION, this.unmute);
+    this.$emitter.on(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
   },
   destroyed() {
-    bus.$off(CMD_MUTE_CONVERSATION, this.mute);
-    bus.$off(CMD_UNMUTE_CONVERSATION, this.unmute);
-    bus.$off(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
+    this.$emitter.off(CMD_MUTE_CONVERSATION, this.mute);
+    this.$emitter.off(CMD_UNMUTE_CONVERSATION, this.unmute);
+    this.$emitter.off(CMD_SEND_TRANSCRIPT, this.toggleEmailActionsModal);
   },
   methods: {
     mute() {
       this.$store.dispatch('muteConversation', this.currentChat.id);
-      this.showAlert(this.$t('CONTACT_PANEL.MUTED_SUCCESS'));
+      useAlert(this.$t('CONTACT_PANEL.MUTED_SUCCESS'));
     },
     unmute() {
       this.$store.dispatch('unmuteConversation', this.currentChat.id);
-      this.showAlert(this.$t('CONTACT_PANEL.UNMUTED_SUCCESS'));
+      useAlert(this.$t('CONTACT_PANEL.UNMUTED_SUCCESS'));
     },
     toggleEmailActionsModal() {
       this.showEmailActionsModal = !this.showEmailActionsModal;
@@ -92,6 +90,45 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="relative flex items-center gap-2 actions--container">
+    <woot-button
+      v-if="!currentChat.muted"
+      v-tooltip="$t('CONTACT_PANEL.MUTE_CONTACT')"
+      variant="clear"
+      color-scheme="secondary"
+      icon="speaker-mute"
+      @click="mute"
+    />
+    <woot-button
+      v-else
+      v-tooltip.left="$t('CONTACT_PANEL.UNMUTE_CONTACT')"
+      variant="clear"
+      color-scheme="secondary"
+      icon="speaker-1"
+      @click="unmute"
+    />
+    <woot-button
+      v-tooltip="$t('CONTACT_PANEL.SEND_TRANSCRIPT')"
+      variant="clear"
+      color-scheme="secondary"
+      icon="share"
+      @click="toggleEmailActionsModal"
+    />
+    <ResolveAction
+      :conversation-id="currentChat.id"
+      :status="currentChat.status"
+    />
+    <EmailTranscriptModal
+      v-if="showEmailActionsModal"
+      :show="showEmailActionsModal"
+      :current-chat="currentChat"
+      @cancel="toggleEmailActionsModal"
+    />
+  </div>
+</template>
+
 <style scoped lang="scss">
 .more--button {
   @apply items-center flex ml-2 rtl:ml-0 rtl:mr-2;

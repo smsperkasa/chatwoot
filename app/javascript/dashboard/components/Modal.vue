@@ -1,30 +1,3 @@
-<template>
-  <transition name="modal-fade">
-    <div
-      v-if="show"
-      :class="modalClassName"
-      transition="modal"
-      @mousedown="handleMouseDown"
-    >
-      <div
-        :class="modalContainerClassName"
-        @mouse.stop
-        @mousedown="event => event.stopPropagation()"
-      >
-        <woot-button
-          v-if="showCloseButton"
-          color-scheme="secondary"
-          icon="dismiss"
-          variant="clear"
-          class="absolute ltr:right-2 rtl:left-2 top-2 z-10"
-          @click="close"
-        />
-        <slot />
-      </div>
-    </div>
-  </transition>
-</template>
-
 <script>
 export default {
   props: {
@@ -60,15 +33,6 @@ export default {
     };
   },
   computed: {
-    modalContainerClassName() {
-      let className =
-        'modal-container bg-white dark:bg-slate-800 skip-context-menu';
-      if (this.fullWidth) {
-        return `${className} modal-container--full-width`;
-      }
-
-      return `${className} ${this.size}`;
-    },
     modalClassName() {
       const modalClassNameMap = {
         centered: '',
@@ -102,33 +66,85 @@ export default {
     onMouseUp() {
       if (this.mousedDownOnBackdrop) {
         this.mousedDownOnBackdrop = false;
-        this.onClose();
+        if (this.closeOnBackdropClick) {
+          this.onClose();
+        }
       }
     },
   },
 };
 </script>
 
-<style scoped lang="scss">
-.modal-container--full-width {
-  align-items: center;
-  border-radius: 0;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  width: 100%;
-}
+<template>
+  <transition name="modal-fade">
+    <div
+      v-if="show"
+      :class="modalClassName"
+      transition="modal"
+      @mousedown="handleMouseDown"
+    >
+      <div
+        class="relative max-h-full overflow-auto bg-white shadow-md modal-container rtl:text-right dark:bg-slate-800 skip-context-menu"
+        :class="{
+          'rounded-xl w-[37.5rem]': !fullWidth,
+          'items-center rounded-none flex h-full justify-center w-full':
+            fullWidth,
+          [size]: true,
+        }"
+        @mouse.stop
+        @mousedown="event => event.stopPropagation()"
+      >
+        <woot-button
+          v-if="showCloseButton"
+          color-scheme="secondary"
+          icon="dismiss"
+          variant="clear"
+          class="absolute z-10 ltr:right-2 rtl:left-2 top-2"
+          @click="close"
+        />
+        <slot />
+      </div>
+    </div>
+  </transition>
+</template>
 
-.modal-mask.right-aligned {
-  justify-content: flex-end;
-
+<style lang="scss">
+.modal-mask {
+  @apply flex items-center justify-center bg-modal-backdrop-light dark:bg-modal-backdrop-dark z-[9990] h-full left-0 fixed top-0 w-full;
   .modal-container {
-    border-radius: 0;
-    height: 100%;
-    width: 30rem;
+    &.medium {
+      @apply max-w-[80%] w-[56.25rem];
+    }
+    // .content-box {
+    //   @apply h-auto p-0;
+    // }
+    .content {
+      @apply p-8;
+    }
+    form,
+    .modal-content {
+      @apply pt-4 pb-8 px-8 self-center;
+      a {
+        @apply p-4;
+      }
+    }
   }
 }
 .modal-big {
-  width: 60%;
+  @apply w-full;
+}
+.modal-mask.right-aligned {
+  @apply justify-end;
+  .modal-container {
+    @apply rounded-none h-full w-[30rem];
+  }
+}
+.modal-enter,
+.modal-leave {
+  @apply opacity-0;
+}
+.modal-enter .modal-container,
+.modal-leave .modal-container {
+  transform: scale(1.1);
 }
 </style>

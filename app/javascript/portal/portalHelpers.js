@@ -4,6 +4,7 @@ import Vue from 'vue';
 import PublicArticleSearch from './components/PublicArticleSearch.vue';
 import TableOfContents from './components/TableOfContents.vue';
 import { initializeTheme } from './portalThemeHelper.js';
+import { directive as onClickaway } from 'vue-clickaway';
 
 export const getHeadingsfromTheArticle = () => {
   const rows = [];
@@ -32,7 +33,7 @@ export const openExternalLinksInNewTab = () => {
   const isOnArticlePage =
     isSameHost && document.querySelector('#cw-article-content') !== null;
 
-  document.addEventListener('click', function (event) {
+  document.addEventListener('click', event => {
     if (!isOnArticlePage) return;
 
     // Some of the links come wrapped in strong tag through prosemirror
@@ -80,6 +81,9 @@ export const InitializationHelpers = {
     if (isSearchContainerAvailable) {
       new Vue({
         components: { PublicArticleSearch },
+        directives: {
+          'on-clickaway': onClickaway,
+        },
         template: '<PublicArticleSearch />',
       }).$mount('#search-wrap');
     }

@@ -1,30 +1,10 @@
-<template>
-  <div class="colorpicker">
-    <div
-      class="colorpicker--selected"
-      :style="`background-color: ${value}`"
-      @click.prevent="toggleColorPicker"
-    />
-    <chrome
-      v-if="isPickerOpen"
-      v-on-clickaway="closeTogglePicker"
-      :disable-alpha="true"
-      :value="value"
-      class="colorpicker--chrome"
-      @input="updateColor"
-    />
-  </div>
-</template>
-
 <script>
 import { Chrome } from 'vue-color';
-import { mixin as clickaway } from 'vue-clickaway';
 
 export default {
   components: {
     Chrome,
   },
-  mixins: [clickaway],
   props: {
     value: {
       type: String,
@@ -51,6 +31,24 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="colorpicker">
+    <div
+      class="colorpicker--selected"
+      :style="`background-color: ${value}`"
+      @click.prevent="toggleColorPicker"
+    />
+    <Chrome
+      v-if="isPickerOpen"
+      v-on-clickaway="closeTogglePicker"
+      disable-alpha
+      :value="value"
+      class="colorpicker--chrome"
+      @input="updateColor"
+    />
+  </div>
+</template>
 
 <style scoped lang="scss">
 @import '~dashboard/assets/scss/variables';

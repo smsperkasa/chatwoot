@@ -1,73 +1,3 @@
-<template>
-  <div class="flex-1 overflow-auto p-4">
-    <div class="row">
-      <div class="column small-12 medium-8 conversation-metric">
-        <metric-card
-          :header="$t('OVERVIEW_REPORTS.ACCOUNT_CONVERSATIONS.HEADER')"
-          :is-loading="uiFlags.isFetchingAccountConversationMetric"
-          :loading-message="
-            $t('OVERVIEW_REPORTS.ACCOUNT_CONVERSATIONS.LOADING_MESSAGE')
-          "
-        >
-          <div
-            v-for="(metric, name, index) in conversationMetrics"
-            :key="index"
-            class="metric-content column"
-          >
-            <h3 class="heading">
-              {{ name }}
-            </h3>
-            <p class="metric">{{ metric }}</p>
-          </div>
-        </metric-card>
-      </div>
-      <div class="column small-12 medium-4">
-        <metric-card :header="$t('OVERVIEW_REPORTS.AGENT_STATUS.HEADER')">
-          <div
-            v-for="(metric, name, index) in agentStatusMetrics"
-            :key="index"
-            class="metric-content column"
-          >
-            <h3 class="heading">
-              {{ name }}
-            </h3>
-            <p class="metric">{{ metric }}</p>
-          </div>
-        </metric-card>
-      </div>
-    </div>
-    <div class="row">
-      <metric-card :header="$t('OVERVIEW_REPORTS.CONVERSATION_HEATMAP.HEADER')">
-        <template #control>
-          <woot-button
-            icon="arrow-download"
-            size="small"
-            variant="smooth"
-            color-scheme="secondary"
-            @click="downloadHeatmapData"
-          >
-            Download Report
-          </woot-button>
-        </template>
-        <report-heatmap
-          :heat-data="accountConversationHeatmap"
-          :is-loading="uiFlags.isFetchingAccountConversationsHeatmap"
-        />
-      </metric-card>
-    </div>
-    <div class="row">
-      <metric-card :header="$t('OVERVIEW_REPORTS.AGENT_CONVERSATIONS.HEADER')">
-        <agent-table
-          :agents="agents"
-          :agent-metrics="agentConversationMetric"
-          :page-index="pageIndex"
-          :is-loading="uiFlags.isFetchingAgentConversationMetric"
-          @page-change="onPageNumberChange"
-        />
-      </metric-card>
-    </div>
-  </div>
-</template>
 <script>
 import { mapGetters } from 'vuex';
 import AgentTable from './components/overview/AgentTable.vue';
@@ -126,7 +56,7 @@ export default {
     this.$store.dispatch('agents/get');
     this.fetchAllData();
 
-    bus.$on('fetch_overview_reports', () => {
+    this.$emitter.on('fetch_overview_reports', () => {
       this.fetchAllData();
     });
   },
@@ -188,3 +118,76 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div class="flex-1 p-4 overflow-auto">
+    <div class="flex flex-col items-center md:flex-row">
+      <div
+        class="flex-1 w-full max-w-full md:w-[65%] md:max-w-[65%] conversation-metric"
+      >
+        <MetricCard
+          :header="$t('OVERVIEW_REPORTS.ACCOUNT_CONVERSATIONS.HEADER')"
+          :is-loading="uiFlags.isFetchingAccountConversationMetric"
+          :loading-message="
+            $t('OVERVIEW_REPORTS.ACCOUNT_CONVERSATIONS.LOADING_MESSAGE')
+          "
+        >
+          <div
+            v-for="(metric, name, index) in conversationMetrics"
+            :key="index"
+            class="flex-1 min-w-0 metric-content"
+          >
+            <h3 class="heading">
+              {{ name }}
+            </h3>
+            <p class="metric">{{ metric }}</p>
+          </div>
+        </MetricCard>
+      </div>
+      <div class="flex-1 w-full max-w-full md:w-[35%] md:max-w-[35%]">
+        <MetricCard :header="$t('OVERVIEW_REPORTS.AGENT_STATUS.HEADER')">
+          <div
+            v-for="(metric, name, index) in agentStatusMetrics"
+            :key="index"
+            class="flex-1 min-w-0 metric-content"
+          >
+            <h3 class="heading">
+              {{ name }}
+            </h3>
+            <p class="metric">{{ metric }}</p>
+          </div>
+        </MetricCard>
+      </div>
+    </div>
+    <div class="flex flex-row flex-wrap max-w-full ml-auto mr-auto">
+      <MetricCard :header="$t('OVERVIEW_REPORTS.CONVERSATION_HEATMAP.HEADER')">
+        <template #control>
+          <woot-button
+            icon="arrow-download"
+            size="small"
+            variant="smooth"
+            color-scheme="secondary"
+            @click="downloadHeatmapData"
+          >
+            {{ $t('OVERVIEW_REPORTS.CONVERSATION_HEATMAP.DOWNLOAD_REPORT') }}
+          </woot-button>
+        </template>
+        <ReportHeatmap
+          :heat-data="accountConversationHeatmap"
+          :is-loading="uiFlags.isFetchingAccountConversationsHeatmap"
+        />
+      </MetricCard>
+    </div>
+    <div class="flex flex-row flex-wrap max-w-full ml-auto mr-auto">
+      <MetricCard :header="$t('OVERVIEW_REPORTS.AGENT_CONVERSATIONS.HEADER')">
+        <AgentTable
+          :agents="agents"
+          :agent-metrics="agentConversationMetric"
+          :page-index="pageIndex"
+          :is-loading="uiFlags.isFetchingAgentConversationMetric"
+          @pageChange="onPageNumberChange"
+        />
+      </MetricCard>
+    </div>
+  </div>
+</template>
