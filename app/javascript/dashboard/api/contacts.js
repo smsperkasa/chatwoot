@@ -30,7 +30,7 @@ class ContactAPI extends ApiClient {
 
   async create(data) {
     const result = await axios.post(this.url, data);
-    // Send chatwoot contact to our odoo connector service
+    // SMSP: Send chatwoot contact to our odoo connector service
     const payload = {
       method: 'contact_create',
       data: {
@@ -41,16 +41,22 @@ class ContactAPI extends ApiClient {
     return result;
   }
 
+  show(id) {
+    return axios.get(`${this.url}/${id}?include_contact_inboxes=false`);
+  }
+
   async update(id, data) {
-    const result = await axios.patch(`${this.url}/${id}`, data);
+    const result = await axios.patch(
+      `${this.url}/${id}?include_contact_inboxes=false`,
+      data
+    );
+    // SMSP: Send the update to our odoo connector service
     const payload = {
       method: 'contact_update',
       data: {
         contact: result.data.payload,
       },
     };
-    // console.log(ODOO_SERVICE_URL)
-    // Send the data to our service
     axios.post(ODOO_SERVICE_URL, payload);
     return result;
   }
