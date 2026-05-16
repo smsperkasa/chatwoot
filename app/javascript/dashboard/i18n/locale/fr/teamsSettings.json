@@ -5,6 +5,9 @@
     "LOADING": "Fetching teams",
     "DESCRIPTION": "Teams allow you to organize agents into groups based on their responsibilities. An agent can belong to multiple teams. When working collaboratively, you can assign conversations to specific teams.",
     "LEARN_MORE": "Learn more about teams",
+    "COUNT": "{n} team | {n} teams",
+    "SEARCH_PLACEHOLDER": "Chercher des équipes...",
+    "NO_RESULTS": "No teams found matching your search",
     "LIST": {
       "404": "Il n'y a aucune équipe créée sur ce compte.",
       "EDIT_TEAM": "Modifier l'équipe",
@@ -20,23 +23,18 @@
         "TITLE": "Ajouter des agents à l'équipe - {teamName}",
         "DESC": "Ajouter des agents à votre équipe nouvellement créée. Cela vous permet de collaborer en équipe sur les conversations, d'être informé des nouveaux événements dans la même conversation."
       },
-      "WIZARD": [
-        {
-          "title": "Créer",
-          "route": "settings_teams_new",
-          "body": "Créer une nouvelle équipe d'agents."
-        },
-        {
-          "title": "Ajouter des agents",
-          "route": "settings_teams_add_agents",
-          "body": "Ajouter des agents à l'équipe."
-        },
-        {
-          "title": "Terminer",
-          "route": "settings_teams_finish",
-          "body": "Vous êtes paré !"
-        }
-      ]
+      "WIZARD_CREATE": {
+        "TITLE": "Créer",
+        "BODY": "Créer une nouvelle équipe d'agents."
+      },
+      "WIZARD_ADD_AGENTS": {
+        "TITLE": "Ajouter des agents",
+        "BODY": "Ajouter des agents à l'équipe."
+      },
+      "WIZARD_FINISH": {
+        "TITLE": "Terminer",
+        "BODY": "Vous êtes paré !"
+      }
     },
     "EDIT_FLOW": {
       "CREATE": {
@@ -49,30 +47,28 @@
         "TITLE": "Ajouter des agents à l'équipe - {teamName}",
         "DESC": "Ajouter des agents à votre équipe nouvellement créée. Tous les agents ajoutés seront notifiés lorsqu'une conversation est assignée à cette équipe."
       },
-      "WIZARD": [
-        {
-          "title": "Détails de l'équipe",
-          "route": "settings_teams_edit",
-          "body": "Changer le nom, la description et d'autres détails."
-        },
-        {
-          "title": "Modifier les agents",
-          "route": "settings_teams_edit_members",
-          "body": "Modifier les agents dans votre équipe."
-        },
-        {
-          "title": "Terminer",
-          "route": "settings_teams_edit_finish",
-          "body": "Vous êtes paré !"
-        }
-      ]
+      "EDIT_WIZARD_DETAILS": {
+        "TITLE": "Détails de l'équipe",
+        "ROUTE": "settings_teams_edit",
+        "BODY": "Changer le nom, la description et d'autres détails."
+      },
+      "EDIT_WIZARD_AGENTS": {
+        "TITLE": "Modifier les agents",
+        "ROUTE": "settings_teams_edit_members",
+        "BODY": "Modifier les agents dans votre équipe."
+      },
+      "EDIT_WIZARD_FINISH": {
+        "TITLE": "Terminer",
+        "ROUTE": "settings_teams_edit_finish",
+        "BODY": "Vous êtes paré !"
+      }
     },
     "TEAM_FORM": {
       "ERROR_MESSAGE": "Impossible d'enregistrer les détails de l'équipe. Veuillez réessayer."
     },
     "AGENTS": {
-      "AGENT": "AGENT",
-      "EMAIL": "COURRIEL",
+      "AGENT": "Agent",
+      "EMAIL": "Courriel",
       "BUTTON_TEXT": "Ajouter des agents",
       "ADD_AGENTS": "Ajout d'agents à votre équipe...",
       "SELECT": "sélectionner",

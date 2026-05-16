@@ -1,14 +1,22 @@
 <script setup>
 import { computed } from 'vue';
 
+import MessageMeta from '../MessageMeta.vue';
+
 import { emitter } from 'shared/helpers/mitt';
 import { useMessageContext } from '../provider.js';
 import { useI18n } from 'vue-i18n';
 
+import MessageFormatter from 'shared/helpers/MessageFormatter.js';
 import { BUS_EVENTS } from 'shared/constants/busEvents';
 import { MESSAGE_VARIANTS, ORIENTATION } from '../constants';
 
-const { variant, orientation, inReplyTo } = useMessageContext();
+const props = defineProps({
+  hideMeta: { type: Boolean, default: false },
+});
+
+const { variant, orientation, inReplyTo, shouldGroupWithNext } =
+  useMessageContext();
 const { t } = useI18n();
 
 const varaintBaseMap = {
@@ -20,16 +28,28 @@ const varaintBaseMap = {
   [MESSAGE_VARIANTS.BOT]: 'bg-n-solid-iris text-n-slate-12',
   [MESSAGE_VARIANTS.TEMPLATE]: 'bg-n-solid-iris text-n-slate-12',
   [MESSAGE_VARIANTS.ERROR]: 'bg-n-ruby-4 text-n-ruby-12',
-  [MESSAGE_VARIANTS.EMAIL]: 'bg-n-alpha-2 w-full',
+  [MESSAGE_VARIANTS.EMAIL]: 'w-full',
   [MESSAGE_VARIANTS.UNSUPPORTED]:
     'bg-n-solid-amber/70 border border-dashed border-n-amber-12 text-n-amber-12',
 };
 
 const orientationMap = {
-  [ORIENTATION.LEFT]: 'rounded-xl rounded-bl-sm',
-  [ORIENTATION.RIGHT]: 'rounded-xl rounded-br-sm',
+  [ORIENTATION.LEFT]:
+    'left-bubble rounded-xl ltr:rounded-bl-sm rtl:rounded-br-sm',
+  [ORIENTATION.RIGHT]:
+    'right-bubble rounded-xl ltr:rounded-br-sm rtl:rounded-bl-sm',
   [ORIENTATION.CENTER]: 'rounded-md',
 };
+
+const flexOrientationClass = computed(() => {
+  const map = {
+    [ORIENTATION.LEFT]: 'justify-start',
+    [ORIENTATION.RIGHT]: 'justify-end',
+    [ORIENTATION.CENTER]: 'justify-center',
+  };
+
+  return map[orientation.value];
+});
 
 const messageClass = computed(() => {
   const classToApply = [varaintBaseMap[variant.value]];
@@ -45,16 +65,23 @@ const messageClass = computed(() => {
 
 const scrollToMessage = () => {
   emitter.emit(BUS_EVENTS.SCROLL_TO_MESSAGE, {
-    messageId: this.message.id,
+    messageId: inReplyTo.value.id,
   });
 };
 
-const previewMessage = computed(() => {
+const shouldShowMeta = computed(
+  () =>
+    !props.hideMeta &&
+    !shouldGroupWithNext.value &&
+    variant.value !== MESSAGE_VARIANTS.ACTIVITY
+);
+
+const replyToPreview = computed(() => {
   if (!inReplyTo) return '';
 
-  const { content, attachments } = inReplyTo;
+  const { content, attachments } = inReplyTo.value;
 
-  if (content) return content;
+  if (content) return new MessageFormatter(content).formattedMessage;
   if (attachments?.length) {
     const firstAttachment = attachments[0];
     const fileType = firstAttachment.fileType ?? firstAttachment.file_type;
@@ -68,23 +95,35 @@ const previewMessage = computed(() => {
 
 <template>
   <div
-    class="text-sm min-w-32 break-words"
+    class="text-sm"
     :class="[
       messageClass,
       {
-        'max-w-md': variant !== MESSAGE_VARIANTS.EMAIL,
+        'max-w-lg': variant !== MESSAGE_VARIANTS.EMAIL,
       },
     ]"
   >
     <div
       v-if="inReplyTo"
-      class="bg-n-alpha-black1 rounded-lg p-2"
+      class="p-2 -mx-1 mb-2 rounded-lg cursor-pointer bg-n-alpha-black1"
       @click="scrollToMessage"
     >
-      <span class="line-clamp-2">
-        {{ previewMessage }}
-      </span>
+      <div
+        v-dompurify-html="replyToPreview"
+        class="prose prose-bubble line-clamp-2"
+      />
     </div>
     <slot />
+    <MessageMeta
+      v-if="shouldShowMeta"
+      :class="[
+        flexOrientationClass,
+        variant === MESSAGE_VARIANTS.EMAIL ? 'px-3 pb-3' : '',
+        variant === MESSAGE_VARIANTS.PRIVATE
+          ? 'text-n-amber-12/50'
+          : 'text-n-slate-11',
+      ]"
+      class="mt-2"
+    />
   </div>
 </template>

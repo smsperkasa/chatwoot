@@ -1,52 +1,35 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMessageContext } from '../provider.js';
 import Icon from 'next/icon/Icon.vue';
 import BaseBubble from 'next/message/bubbles/Base.vue';
 
 import MessageFormatter from 'shared/helpers/MessageFormatter.js';
-import { MESSAGE_VARIANTS } from '../constants';
-
-/**
- * @typedef {Object} Attachment
- * @property {number} id - Unique identifier for the attachment
- * @property {number} messageId - ID of the associated message
- * @property {'image'|'audio'|'video'|'file'|'location'|'fallback'|'share'|'story_mention'|'contact'|'ig_reel'} fileType - Type of the attachment (file or image)
- * @property {number} accountId - ID of the associated account
- * @property {string|null} extension - File extension
- * @property {string} dataUrl - URL to access the full attachment data
- * @property {string} thumbUrl - URL to access the thumbnail version
- * @property {number} fileSize - Size of the file in bytes
- * @property {number|null} width - Width of the image if applicable
- * @property {number|null} height - Height of the image if applicable
- */
-const props = defineProps({
-  content: {
-    type: String,
-    required: true,
-  },
-  attachments: {
-    type: Array,
-    default: () => [],
-  },
-});
+import { MESSAGE_VARIANTS, ATTACHMENT_TYPES } from '../constants';
 
 const emit = defineEmits(['error']);
+const { t } = useI18n();
+const { variant, content, contentAttributes, attachments } =
+  useMessageContext();
 
 const attachment = computed(() => {
-  return props.attachments[0];
+  return attachments.value[0];
 });
 
-const { variant } = useMessageContext();
+const isStoryReply = computed(() => {
+  return contentAttributes.value?.imageType === ATTACHMENT_TYPES.IG_STORY_REPLY;
+});
+
 const hasImgStoryError = ref(false);
 const hasVideoStoryError = ref(false);
 
 const formattedContent = computed(() => {
   if (variant.value === MESSAGE_VARIANTS.ACTIVITY) {
-    return props.content;
+    return content.value;
   }
 
-  return new MessageFormatter(props.content).formattedMessage;
+  return new MessageFormatter(content.value).formattedMessage;
 });
 
 const onImageLoadError = () => {
@@ -62,16 +45,19 @@ const onVideoLoadError = () => {
 
 <template>
   <BaseBubble class="p-3 overflow-hidden" data-bubble-name="ig-story">
-    <div v-if="content" class="mb-2" v-html="formattedContent" />
+    <p v-if="isStoryReply" class="mb-1 text-xs text-n-slate-11">
+      {{ t('COMPONENTS.FILE_BUBBLE.INSTAGRAM_STORY_REPLY') }}
+    </p>
+    <div v-if="content" v-dompurify-html="formattedContent" class="mb-2" />
     <img
       v-if="!hasImgStoryError"
-      class="rounded-lg max-w-80"
+      class="rounded-lg max-w-80 skip-context-menu"
       :src="attachment.dataUrl"
       @error="onImageLoadError"
     />
     <video
       v-else-if="!hasVideoStoryError"
-      class="rounded-lg max-w-80"
+      class="rounded-lg max-w-80 skip-context-menu"
       controls
       :src="attachment.dataUrl"
       @error="onVideoLoadError"

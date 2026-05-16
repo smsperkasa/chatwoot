@@ -11,11 +11,11 @@
       "404": "لا توجد سجلات تدقيق متاحة في هذا الحساب.",
       "TITLE": "إدارة سجلات التدقيق",
       "DESC": "سجلات التدقيق هي مسارات للأحداث والإجراءات في نظام Chatwoot.",
-      "TABLE_HEADER": [
-        "المستخدم",
-        "الإجراء",
-        "عنوان IP"
-      ]
+      "TABLE_HEADER": {
+        "ACTIVITY": "الأنشطة",
+        "TIME": "الوقت",
+        "IP_ADDRESS": "عنوان IP"
+      }
     },
     "API": {
       "SUCCESS_MESSAGE": "تم استرجاع سجلات التدقيق بنجاح",
@@ -32,7 +32,7 @@
       "EDIT": {
         "SELF": "{agentName} غير {attributes} الخاصة به إلى {values}",
         "OTHER": "{agentName} غير {attributes} لـ {user} إلى {values}",
-        "DELETED": "{agentName} غير {attributes} لـ {user} إلى {values}"
+        "DELETED": "{agentName} غير {attributes} للمستخدم المحذوف إلى {values}"
       }
     },
     "INBOX": {
@@ -69,6 +69,9 @@
     },
     "ACCOUNT": {
       "EDIT": "{agentName} قام بتحديث إعدادات الحساب (#{id})"
+    },
+    "CONVERSATION": {
+      "DELETE": "{agentName} deleted conversation #{id}"
     }
   }
 }
