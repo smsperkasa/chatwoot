@@ -3,7 +3,7 @@ version: '3'
 services:
   base: &base
     # image: chatwoot:smsp
-    image: chatwoot/chatwoot:latest
+    image: chatwoot/chatwoot:v4.13.0
     # build:
     #   context: .
     #   dockerfile: ./docker/Dockerfile
@@ -43,7 +43,7 @@ services:
     command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
 
   postgres:
-    image: postgres:12
+    image: pgvector/pgvector:pg16
     restart: always
     expose:
       - 5432
