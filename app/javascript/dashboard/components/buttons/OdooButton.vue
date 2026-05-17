@@ -92,7 +92,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { mixin as clickaway } from 'vue-clickaway';
 import alertMixin from 'shared/mixins/alertMixin';
 // import { API } from 'widget/helpers/axios';
 
@@ -107,7 +106,7 @@ export default {
   // WootDropdownItem,
   // WootDropdownMenu,
   // },
-  mixins: [clickaway, alertMixin, conversationLabelMixin],
+  mixins: [alertMixin, conversationLabelMixin],
   data() {
     return {
       isLoading: false,
