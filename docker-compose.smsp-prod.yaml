@@ -11,6 +11,10 @@ services:
       dockerfile: Dockerfile_nginx
     ports:
       - '0.0.0.0:443:443'
+    volumes:
+      # Cloudflare Origin CA cert lives on the host; mounted read-only so the private key
+      # stays out of git and the image. nginx/ssl-smsperkasa.com.conf points here.
+      - /etc/ssl/cloudflare:/etc/ssl/cloudflare:ro
 
   nginx-postgres:
     build:
