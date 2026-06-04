@@ -2,7 +2,7 @@
 
 - **Date:** 2026-06-04
 - **Owner:** teddy@smsperkasa.com
-- **Status:** IN PROGRESS — discovery done; fix prepared via **Option A2** (reuse the Cloudflare Origin wildcard, bind-mounted), awaiting deploy on the droplet. Deploy + firewall runbook: `deploy/channels-ssl-fullstrict-and-firewall.md`. Still one of the **two** blockers before the zone can flip (other: `cpanel-blog.smsperkasa.com`, separate handoff).
+- **Status:** ✅ ORIGIN READY — **Option A2 deployed & verified 2026-06-04.** The origin `167.71.206.23:443` now serves the Cloudflare Origin wildcard (issuer `CloudFlare Origin SSL Certificate Authority`, SAN `*.smsperkasa.com`, valid to 2041); `channels -> 200` through Cloudflare; only `nginx-chatwoot` was recreated. Deploy + firewall runbook: `deploy/channels-ssl-fullstrict-and-firewall.md`. **Zone flip still gated on `cpanel-blog.smsperkasa.com`** (separate handoff) — do NOT flip yet. Firewall (runbook Part B) not yet applied.
 - **Risk level:** ⚠️ Higher — `channels.smsperkasa.com` is the **live customer chat** (Chatwoot) embedded on the website. A mistake here breaks the chat widget. Do the read-only discovery first; make no change until the current state is understood.
 
 ---

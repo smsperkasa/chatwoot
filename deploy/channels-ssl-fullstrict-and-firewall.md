@@ -74,8 +74,13 @@ Expect `syntax is ok` / `test is successful`. This actually opens the mounted ce
 
 ### A4. Recreate ONLY nginx-chatwoot (the ~1–3 s blip)
 
+> **`--no-deps` is mandatory.** `smsp-main` may carry compose changes beyond the cert (e.g. the
+> `postgres:12 → pgvector/pgvector:pg16` reconciliation). `--no-deps` guarantees only nginx-chatwoot is
+> recreated; postgres/rails/redis/sidekiq are never touched. Confirm with `docker ps` afterward: only
+> nginx-chatwoot shows a fresh `Up <seconds>`. (Deployed & verified 2026-06-04 — pg16 already running.)
+
 ```bash
-docker-compose -f docker-compose.yaml -f docker-compose.smsp-prod.yaml up -d nginx-chatwoot
+docker-compose -f docker-compose.yaml -f docker-compose.smsp-prod.yaml up -d --no-deps nginx-chatwoot
 ```
 
 ### A5. Verify
@@ -97,7 +102,7 @@ docker logs --tail=50 nginx-chatwoot
 ```bash
 git checkout HEAD~1 -- nginx/ssl-smsperkasa.com.conf docker-compose.smsp-prod.yaml
 docker-compose -f docker-compose.yaml -f docker-compose.smsp-prod.yaml build nginx-chatwoot
-docker-compose -f docker-compose.yaml -f docker-compose.smsp-prod.yaml up -d nginx-chatwoot
+docker-compose -f docker-compose.yaml -f docker-compose.smsp-prod.yaml up -d --no-deps nginx-chatwoot
 ```
 Chat returns to its prior (Full-tolerated) state in seconds.
 
